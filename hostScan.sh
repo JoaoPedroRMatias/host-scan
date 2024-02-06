@@ -1,6 +1,37 @@
 #!/bin/bash
 
-cat ASCII.txt
+echo "
+	░█░█░█▀█░█▀▀░▀█▀░█▀▀░█▀▀░█▀█░█▀█
+	░█▀█░█░█░▀▀█░░█░░▀▀█░█░░░█▀█░█░█
+	░▀░▀░▀▀▀░▀▀▀░░▀░░▀▀▀░▀▀▀░▀░▀░▀░▀
+
+Tool to scan hosts on the network. 
+Enter the IP in the following format: xxx.xxx.xxx.xxx
+
+"
+
+progress-bar() {
+	local percent=${1}
+
+    already_done() {
+		for ((done=0; done<$percent; done++)); 
+		do echo -ne "\033[;97m▇\033[0m"; 
+		done 
+	}
+
+    remaining() {
+		for ((remain=$percent; remain<50; remain++)); 
+		do echo -ne "\033[;37m▇\033[0m"; 
+		done 
+	}
+    
+	percentage() { 
+		echo -ne " $((percent*2))% "; 
+	}
+    
+	echo -ne "\r"
+	already_done; remaining; percentage
+}
 
 # VALIDA O ENDEREÇO IP
 validate_ip() {
@@ -41,21 +72,38 @@ validate_ip "$ip"
 network_ip=$(transform_last_number_to_zero "$ip")
 host=$(transform_last_number_increment "$network_ip")
 
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "				     ACTIVE HOSTS"
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echo -ne "┏"
+for((i=0;i<48;i++));
+do echo -ne "━";
+done;
 
+echo -ne "┓\n┃\t\t   ACTIVE HOSTS\t\t\t ┃\n┣"
+
+for((i=0;i<48;i++));
+do echo -ne "━";
+done;
+
+echo "┫"
 
 completed_ips=0
 
 while [[ "${host##*.}" -lt 254 ]]; do
 	if ping -c 1 -W 0.5 "$host" >/dev/null; then
-		echo "$host UP"
-	fi
+		echo -ne "\r"
+		
+		for((i = 0; i < 100; i++));
+		do echo -ne " ";
+		done;
 
+		echo -ne "\r┃ ➤ $host\t\033[;32m✔\033[0m\t\t\t ┃\n"
+	fi
+	
 	((completed_ips++))
-    percentage=$((completed_ips * 100 / total_ips))
-    echo -ne "Progress: $percentage%\r"
+    percentage=$((completed_ips * 50 / total_ips))
+    #echo -ne "Progress: $percentage%\r"
+	progress-bar $percentage
 
     host=$(transform_last_number_increment "$host")
 done
+
+echo -ne "\r┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n"
