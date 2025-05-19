@@ -2,6 +2,9 @@
 
 Este é um projeto simples em Rust que escaneia hosts ativos em uma rede local a partir de um IP base informado pelo usuário. Ele utiliza o comando `ping` para verificar a disponibilidade dos dispositivos na rede.
 
+<div align="center">
+    <img src=https://github.com/user-attachments/assets/bfd3d04b-81e3-41b7-a6e9-85f5292dc973>
+</div>
 
 ## Funcionalidades
 
